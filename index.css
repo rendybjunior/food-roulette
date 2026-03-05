@@ -600,6 +600,12 @@ body {
   margin-bottom: 20px;
 }
 .modal-header h3 { font-size: 1.25rem; font-weight: 700; }
+.modal-divider {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
 .form-group { margin-bottom: 16px; }
 .form-group label {
   display: block;
@@ -629,6 +635,82 @@ body {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 28px;
+}
+
+/* ── Ratings UI ────────────────────────────────────────────── */
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.card-rating {
+  font-size: 0.85rem;
+  color: var(--accent-light);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.card-rating .muted {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.btn-rate {
+  background: transparent;
+  border: 1px solid var(--border-accent);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  flex: 1;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-rate:hover { background: var(--accent-dim); color: var(--accent-light); }
+
+.rating-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.rating-avg {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.rating-list {
+  max-height: 120px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.rating-list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.rating-list-item:last-child { border-bottom: none; }
+.rating-list-item strong { color: var(--text-primary); }
+
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.star-rating input { display: none; }
+.star-rating label {
+  cursor: pointer;
+  font-size: 2rem;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: var(--accent);
 }
 
 /* ── Stats Bar ─────────────────────────────────────────────── */

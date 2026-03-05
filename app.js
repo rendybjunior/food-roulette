@@ -233,6 +233,11 @@ function renderRestoList(restos, filterText = '') {
   }
 
   filtered.forEach(r => {
+    const avg = getAvgRating(r);
+    const isUnrated = !r.ratings || r.ratings.length === 0;
+    const avgScale = isUnrated ? 'New' : `${avg.toFixed(1)} ★`;
+    const raters = isUnrated ? 'unrated' : `${r.ratings.length} review${r.ratings.length > 1 ? 's' : ''}`;
+
     const card = document.createElement('div');
     card.className = 'resto-card';
     card.innerHTML = `
@@ -240,6 +245,13 @@ function renderRestoList(restos, filterText = '') {
       <div class="card-address">📍 ${escHtml(r.address)}</div>
       <div class="card-tags">
         ${r.tags.map(t => `<span class="badge accent">${escHtml(t)}</span>`).join('')}
+      </div>
+      <div class="card-meta">
+        <div class="card-rating">
+          <span>${avgScale}</span>
+          <span class="muted">(${raters})</span>
+        </div>
+        <button class="btn-rate" data-id="${r.id}">⭐ Rate</button>
       </div>
       <div class="card-actions">
         <button class="btn-edit" data-id="${r.id}">✎ Edit</button>
@@ -283,6 +295,14 @@ function setupCrud(restos) {
   const btnCloseDelete = document.getElementById('btn-cancel-delete');
   const deleteRestoName = document.getElementById('delete-resto-name');
 
+  const modalRate = document.getElementById('modal-rate');
+  const formRate = document.getElementById('form-rate');
+  const modalRateTitle = document.getElementById('modal-rate-title');
+  const rateAvgDisplay = document.getElementById('rate-avg-display');
+  const rateExistingList = document.getElementById('rate-existing-list');
+  const btnCloseRate = document.getElementById('btn-close-rate');
+  const btnCancelRate = document.getElementById('btn-cancel-rate');
+
   // Initial render
   setTimeout(() => renderRestoList(restos), 0);
 
@@ -307,6 +327,8 @@ function setupCrud(restos) {
   if (btnCloseResto) btnCloseResto.addEventListener('click', () => closeModal('modal-resto'));
   if (btnCancelResto) btnCancelResto.addEventListener('click', () => closeModal('modal-resto'));
   if (btnCloseDelete) btnCloseDelete.addEventListener('click', () => closeModal('modal-delete'));
+  if (btnCloseRate) btnCloseRate.addEventListener('click', () => closeModal('modal-rate'));
+  if (btnCancelRate) btnCancelRate.addEventListener('click', () => closeModal('modal-rate'));
 
   // Form Submit (Add/Edit)
   if (formResto) {
@@ -347,11 +369,65 @@ function setupCrud(restos) {
     });
   }
 
-  // Grid Actions (Edit / Delete)
+  // Form Submit (Rate)
+  if (formRate) {
+    formRate.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('input-rate-id').value;
+      const person = document.getElementById('input-rate-name').value.trim();
+      const scoreInput = document.querySelector('input[name="rating-score"]:checked');
+      
+      if (!scoreInput) {
+        showToast('⚠️ Please select a rating (1-5 stars)', '');
+        return;
+      }
+      
+      const score = parseInt(scoreInput.value, 10);
+      const resto = restos.find(r => r.id === id);
+      
+      if (resto) {
+        if (!resto.ratings) resto.ratings = [];
+        const existingIdx = resto.ratings.findIndex(r => r.person.toLowerCase() === person.toLowerCase());
+        
+        if (existingIdx !== -1) {
+          resto.ratings[existingIdx].score = score;
+        } else {
+          resto.ratings.push({ person, score });
+        }
+        
+        saveRestos(restos);
+        renderRestoList(restos, searchInput ? searchInput.value : '');
+        showToast(`⭐ Rating saved for ${resto.name}!`, 'success');
+        closeModal('modal-rate');
+      }
+    });
+  }
+
+  // Grid Actions (Rate / Edit / Delete)
   if (grid) {
     grid.addEventListener('click', (e) => {
+      const btnRate = e.target.closest('.btn-rate');
       const btnEdit = e.target.closest('.btn-edit');
       const btnDelete = e.target.closest('.btn-delete');
+      
+      if (btnRate) {
+        const id = btnRate.dataset.id;
+        const resto = restos.find(r => r.id === id);
+        if (resto) {
+          document.getElementById('input-rate-id').value = resto.id;
+          modalRateTitle.textContent = `Rate ${resto.name}`;
+          
+          const isUnrated = !resto.ratings || resto.ratings.length === 0;
+          rateAvgDisplay.textContent = isUnrated ? 'Avg: —' : `Avg: ${getAvgRating(resto).toFixed(1)} ★`;
+          
+          rateExistingList.innerHTML = isUnrated 
+            ? '<p>No ratings yet. Be the first!</p>'
+            : resto.ratings.map(r => `<div class="rating-list-item"><strong>${escHtml(r.person)}</strong><span>${r.score} ★</span></div>`).join('');
+            
+          formRate.reset();
+          openModal('modal-rate');
+        }
+      }
       
       if (btnEdit) {
         const id = btnEdit.dataset.id;
