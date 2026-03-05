@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Black Romantic",
+    "address": "Jl. Gelap Nyawang No. 2",
+    "tags": ["Indonesian", "Nasi Goreng", "Nasi Kebuli", "Ayam Bakar", "Sop Buntut", "Cafe", "Affordable"]
+  },
+  {
+    "name": "Bakmie Ganyang",
+    "address": "Jl. Gelap Nyawang",
+    "tags": ["Bakmie", "Chinese-Indonesian", "Chicken Katsu", "Japanese Rice", "Wonton", "Comfort Food"]
+  },
+  {
+    "name": "Kupat Tahu Permata Khas Padalarang",
+    "address": "Jl. Gelap Nyawang",
+    "tags": ["Traditional", "Sundanese", "Kupat Tahu", "Breakfast", "Local Heritage"]
+  },
+  {
+    "name": "Ayam Cola (Stall)",
+    "address": "Jl. Gelap Nyawang",
+    "tags": ["Street Food", "Fried Chicken", "Unique", "Student Favorite"]
+  },
+  {
+    "name": "Ketan Susu & Pisang Bakar Gelap Nyawang",
+    "address": "Jl. Gelap Nyawang",
+    "tags": ["Snacks", "Dessert", "Late Night", "Indonesian Sweet"]
+  },
+  {
+    "name": "Ayam Geprek & Penyetan stalls",
+    "address": "Jl. Gelap Nyawang (Area)",
+    "tags": ["Spicy", "Fried Chicken", "Sambal", "Indonesian"]
+  },
+  {
+    "name": "Mie Ayam & Bakso Gelap Nyawang",
+    "address": "Jl. Gelap Nyawang",
+    "tags": ["Noodles", "Meatballs", "Street Food", "Chinese-Indonesian"]
+  }
+]

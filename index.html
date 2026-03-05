@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Roulette 🎰 — Pick Your Lunch</title>
+  <meta name="description" content="Spin the Food Roulette and let fate decide where you eat today. A fun restaurant randomizer for your team." />
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="app-header">
+    <a class="app-logo" href="#">
+      <span class="logo-icon">🎰</span>
+      Food<span>Roulette</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <ul class="nav-tabs" role="tablist">
+        <li id="tab-roulette"
+            class="nav-tab active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="section-roulette"
+            tabindex="0">🎲 Roulette</li>
+        <li id="tab-restaurants"
+            class="nav-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="section-restaurants"
+            tabindex="0">🍽️ Restaurants</li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────── -->
+  <main class="app-main">
+
+    <!-- ── Roulette Tab ─────────────────────────────────── -->
+    <section id="section-roulette" class="tab-section active" aria-labelledby="tab-roulette">
+
+      <div class="roulette-hero">
+        <h1>Spin &amp; <span class="highlight">Decide</span><br>Where to Eat 🍜</h1>
+        <p>No more "idk, you pick." Let the roulette decide your lunch.</p>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-chip">
+          <span class="stat-icon">🍽️</span>
+          <span>Restaurants:</span>
+          <span class="stat-value" id="stat-count">—</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-icon">🎲</span>
+          <span>Last winner:</span>
+          <span class="stat-value" id="stat-last">None yet</span>
+        </div>
+      </div>
+
+      <!-- Slot machine window -->
+      <div class="slot-container">
+        <div class="slot-window" id="slot-window" aria-live="polite" aria-label="Roulette slot machine">
+          <div class="slot-idle" id="slot-idle">
+            <span class="idle-icon">🎰</span>
+            <p>Press <strong>Spin</strong> to roll!</p>
+          </div>
+          <div class="slot-reel" id="slot-reel" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Result card -->
+      <div class="result-card" id="result-card" role="region" aria-label="Selected restaurant">
+        <div class="result-label">🎉 Today's Pick</div>
+        <div class="result-name"  id="result-name"></div>
+        <div class="result-address" id="result-address">
+          <span>📍</span><span id="result-address-text"></span>
+        </div>
+        <div class="result-tags" id="result-tags"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="spin-controls">
+        <button class="btn-spin" id="btn-spin" aria-label="Spin the roulette">
+          <span class="spin-inner">
+            <span class="btn-icon">🎰</span>
+            <span id="btn-spin-label">Spin!</span>
+          </span>
+        </button>
+
+        <label class="weighted-toggle-wrap" for="weighted-toggle" id="weighted-label">
+          <span class="toggle-switch">
+            <input type="checkbox" id="weighted-toggle" aria-describedby="weighted-hint" />
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </span>
+          <span>Weighted mode</span>
+        </label>
+        <p class="weighted-hint" id="weighted-hint">
+          ⭐ Higher-rated restaurants are more likely to be picked.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ── Restaurants Tab (Phase 2 placeholder) ────────── -->
+    <section id="section-restaurants" class="tab-section" aria-labelledby="tab-restaurants">
+      <div class="section-header">
+        <h2 class="section-title">Restaurants</h2>
+      </div>
+      <div class="placeholder-state">
+        <div class="placeholder-icon">🍽️</div>
+        <p>Restaurant management coming in <strong>Phase 2</strong>.<br>
+           Your restaurants are already loaded — go spin!</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Toast Container ────────────────────────────────── -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
