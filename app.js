@@ -208,6 +208,201 @@ function showToast(msg, type = '') {
 }
 
 /* ───────────────────────────────────────────────────────────
+   UI — CRUD & MODALS
+   ─────────────────────────────────────────────────────────── */
+
+let currentDeleteId = null;
+
+function renderRestoList(restos, filterText = '') {
+  const grid = document.getElementById('resto-grid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  const lowerFilter = filterText.toLowerCase();
+
+  const filtered = restos.filter(r => {
+    if (!filterText) return true;
+    const matchName = r.name.toLowerCase().includes(lowerFilter);
+    const matchTag = r.tags.some(t => t.toLowerCase().includes(lowerFilter));
+    return matchName || matchTag;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="placeholder-state"><p>No restaurants found.</p></div>`;
+    return;
+  }
+
+  filtered.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'resto-card';
+    card.innerHTML = `
+      <h3>${escHtml(r.name)}</h3>
+      <div class="card-address">📍 ${escHtml(r.address)}</div>
+      <div class="card-tags">
+        ${r.tags.map(t => `<span class="badge accent">${escHtml(t)}</span>`).join('')}
+      </div>
+      <div class="card-actions">
+        <button class="btn-edit" data-id="${r.id}">✎ Edit</button>
+        <button class="btn-delete" data-id="${r.id}">🗑 Delete</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.showModal();
+    // prevent background scrolling
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.close();
+    document.body.style.overflow = '';
+  }
+}
+
+function setupCrud(restos) {
+  const searchInput = document.getElementById('search-input');
+  const btnAdd = document.getElementById('btn-add-resto');
+  const grid = document.getElementById('resto-grid');
+  
+  const modalResto = document.getElementById('modal-resto');
+  const formResto = document.getElementById('form-resto');
+  const modalRestoTitle = document.getElementById('modal-resto-title');
+  const btnCloseResto = document.getElementById('btn-close-resto');
+  const btnCancelResto = document.getElementById('btn-cancel-resto');
+  
+  const modalDelete = document.getElementById('modal-delete');
+  const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+  const btnCloseDelete = document.getElementById('btn-cancel-delete');
+  const deleteRestoName = document.getElementById('delete-resto-name');
+
+  // Initial render
+  setTimeout(() => renderRestoList(restos), 0);
+
+  // Search
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      renderRestoList(restos, e.target.value);
+    });
+  }
+
+  // Add Button
+  if (btnAdd) {
+    btnAdd.addEventListener('click', () => {
+      formResto.reset();
+      document.getElementById('input-id').value = '';
+      modalRestoTitle.textContent = 'Add Restaurant';
+      openModal('modal-resto');
+    });
+  }
+
+  // Close Modals
+  if (btnCloseResto) btnCloseResto.addEventListener('click', () => closeModal('modal-resto'));
+  if (btnCancelResto) btnCancelResto.addEventListener('click', () => closeModal('modal-resto'));
+  if (btnCloseDelete) btnCloseDelete.addEventListener('click', () => closeModal('modal-delete'));
+
+  // Form Submit (Add/Edit)
+  if (formResto) {
+    formResto.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('input-id').value;
+      const name = document.getElementById('input-name').value.trim();
+      const address = document.getElementById('input-address').value.trim();
+      const tagsStr = document.getElementById('input-tags').value;
+      
+      const tags = tagsStr.split(',')
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+
+      if (id) {
+        // Edit
+        const idx = restos.findIndex(r => r.id === id);
+        if (idx !== -1) {
+          restos[idx] = { ...restos[idx], name, address, tags };
+          showToast(`✅ "${name}" updated!`, 'success');
+        }
+      } else {
+        // Add
+        const newResto = { id: uuid(), name, address, tags, ratings: [] };
+        // Add to top
+        restos.unshift(newResto);
+        showToast(`🎉 "${name}" added!`, 'success');
+      }
+
+      saveRestos(restos);
+      renderRestoList(restos, searchInput ? searchInput.value : '');
+      
+      // Update count stat
+      const statCount = document.getElementById('stat-count');
+      if (statCount) statCount.textContent = restos.length;
+      
+      closeModal('modal-resto');
+    });
+  }
+
+  // Grid Actions (Edit / Delete)
+  if (grid) {
+    grid.addEventListener('click', (e) => {
+      const btnEdit = e.target.closest('.btn-edit');
+      const btnDelete = e.target.closest('.btn-delete');
+      
+      if (btnEdit) {
+        const id = btnEdit.dataset.id;
+        const resto = restos.find(r => r.id === id);
+        if (resto) {
+          document.getElementById('input-id').value = resto.id;
+          document.getElementById('input-name').value = resto.name;
+          document.getElementById('input-address').value = resto.address;
+          document.getElementById('input-tags').value = resto.tags.join(', ');
+          
+          modalRestoTitle.textContent = 'Edit Restaurant';
+          openModal('modal-resto');
+        }
+      }
+
+      if (btnDelete) {
+        const id = btnDelete.dataset.id;
+        const resto = restos.find(r => r.id === id);
+        if (resto) {
+          currentDeleteId = id;
+          deleteRestoName.textContent = resto.name;
+          openModal('modal-delete');
+        }
+      }
+    });
+  }
+
+  // Confirm Delete
+  if (btnConfirmDelete) {
+    btnConfirmDelete.addEventListener('click', () => {
+      if (!currentDeleteId) return;
+      const idx = restos.findIndex(r => r.id === currentDeleteId);
+      if (idx !== -1) {
+        const name = restos[idx].name;
+        restos.splice(idx, 1);
+        saveRestos(restos);
+        renderRestoList(restos, searchInput ? searchInput.value : '');
+        
+        // Update count stat
+        const statCount = document.getElementById('stat-count');
+        if (statCount) statCount.textContent = restos.length;
+        
+        showToast(`🗑 "${name}" removed.`, 'success');
+      }
+      currentDeleteId = null;
+      closeModal('modal-delete');
+    });
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
    UI — TABS
    ─────────────────────────────────────────────────────────── */
 
@@ -266,6 +461,8 @@ async function init() {
   // Update count stat
   const statCount = document.getElementById('stat-count');
   if (statCount) statCount.textContent = restos.length;
+
+  setupCrud(restos);
 
   // Wire up weighted toggle hint
   const weightedToggle = document.getElementById('weighted-toggle');

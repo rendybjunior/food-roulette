@@ -108,14 +108,72 @@
       <div class="section-header">
         <h2 class="section-title">Restaurants</h2>
       </div>
-      <div class="placeholder-state">
-        <div class="placeholder-icon">🍽️</div>
-        <p>Restaurant management coming in <strong>Phase 2</strong>.<br>
-           Your restaurants are already loaded — go spin!</p>
+      <!-- Toolbar: Search & Add -->
+      <div class="toolbar">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search by name or tag..." aria-label="Search restaurants" />
+        </div>
+        <button class="btn-primary" id="btn-add-resto">
+          <span class="btn-icon">＋</span> Add Restaurant
+        </button>
+      </div>
+
+      <!-- Grid -->
+      <div class="resto-grid" id="resto-grid" aria-live="polite">
+        <!-- Cards will go here via JS -->
       </div>
     </section>
 
   </main>
+
+  <!-- ── Modals ─────────────────────────────────────────── -->
+  <!-- Add/Edit Modal -->
+  <dialog id="modal-resto" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-resto-title">Add Restaurant</h3>
+        <button class="btn-close" id="btn-close-resto" aria-label="Close modal">✕</button>
+      </div>
+      <form id="form-resto">
+        <input type="hidden" id="input-id" />
+        
+        <div class="form-group">
+          <label for="input-name">Name <span class="required">*</span></label>
+          <input type="text" id="input-name" required placeholder="e.g. Spicy Ramen Spot" />
+        </div>
+
+        <div class="form-group">
+          <label for="input-address">Address <span class="required">*</span></label>
+          <input type="text" id="input-address" required placeholder="e.g. 123 Main St" />
+        </div>
+
+        <div class="form-group">
+          <label for="input-tags">Tags <span class="hint">(comma separated)</span></label>
+          <input type="text" id="input-tags" placeholder="e.g. spicy, noodles, cheap" />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" id="btn-cancel-resto">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Delete Confirm Modal -->
+  <dialog id="modal-delete" class="modal modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Delete Restaurant?</h3>
+      </div>
+      <p>Are you sure you want to remove <strong id="delete-resto-name"></strong>?</p>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" id="btn-cancel-delete">Cancel</button>
+        <button type="button" class="btn-danger" id="btn-confirm-delete">Delete</button>
+      </div>
+    </div>
+  </dialog>
 
   <!-- ── Toast Container ────────────────────────────────── -->
   <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
